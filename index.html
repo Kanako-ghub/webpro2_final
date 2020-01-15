@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+
+<html>
+<head>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js">//sweetalertをsdn引用しました</script>
+
+  
+  
+  <meta charset="utf-8">
+  <title>推し接触イベントシュミレーター強化版</title>
+</head>
+<style>
+  .center-box {
+    text-align:center;
+  }
+  .large-text {
+    font-size: 4.0rem;
+    text-align:center;
+  }
+  h1,h3,p{
+    text-align: center;
+    color:#CC3366;
+  }
+</style>
+<body>
+  
+  
+    <h1>推し接触イベントシュミレーター強化版<br>
+        (男性アイドル誕生日イベント)<br>
+    </h1>  
+  <h3>推しとの対面は楽しみ夢のワンダーランド！<br></h3>
+  <p>
+      「せっかくの接触イベントなのに緊張してうまく話せなかった！」<br>
+    ということのないように練習してみましょう<br>
+    イベントに関するワードを使って話しかけると、<br>
+    推しと話すシュミレーションができます<br>
+    
+      
+    ---話題のヒント---<br>
+      はじめまして<br>
+      誕生日おめでとう<br>
+      ブロマイド<br>
+      かっこいい<br>
+      かわいい<br>
+      プレゼント<br>
+  </p>
+  <h3>↓ボタンを押して話しかけてみましょう<br>
+  
+<p class="center-box"><img id="mic" src="text_tv_onair_off.png"width=auto height="100"></p>　
+<div id="result-div" class="large-text"></div>
+
+<script>
+  
+  const resultDiv = document.querySelector('#result-div');
+  const micDiv = document.querySelector('#mic');
+  let speakingtime = 0;
+  
+  // 音声認識機能(Chrome)
+  let rec = new webkitSpeechRecognition();
+  let stopped = true;
+  rec.continuous = true;
+  rec.interimResults = false;
+  rec.lang = 'ja-JP';
+
+  micDiv.onclick = function () {
+    if (stopped == true) {
+      stopped = false;
+      resultDiv.innerHTML = "";
+      rec.start();
+    } else {
+      stopped = true;
+      rec.stop();
+    }
+  }
+
+  rec.onstart = function () { 
+    console.log('声をかけて');
+    micDiv.setAttribute("src","text_tv_onair_on .png");//話しかけるタイム
+    
+    speakingtime = 0;
+  };
+
+  rec.onend = function () { 
+    console.log('お返事中');
+    micDiv.setAttribute("src","text_tv_onair_off.png");//返事中
+    if (stopped == false) {
+      setTimeout(function () {
+        rec.start();
+      },speakingtime);
+    }
+  };
+
+  rec.onresult = function (e) {
+    rec.stop();//録音停止
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        console.log(e);
+        let text = e.results[i][0].transcript;
+        console.log(text);
+        speak (reply(text));
+        speakingtime = text.length * 200;
+        console.log("estimate:", speakingtime, "ms");
+        
+        //resultDiv.innerHTML = text;
+        //resultDiv.innerHTML = reply(text);
+      }
+    }
+  }
+  
+  function reply(text){
+    let re = new RegExp(".*おめでとう.*");
+    let re2 = new RegExp(".*初めまして.*");
+    let re3 = new RegExp(".*ブロマイド.*");
+    let re4 = new RegExp(".*グッズ.*");
+    let re5 = new RegExp(".*かっこいい.*");
+    let re6 = new RegExp(".*可愛い.*");
+    let re7 = new RegExp(".*県.*");
+    let re8 = new RegExp(".*プレゼント.*");
+    let re9 = new RegExp(".*手紙.*");
+    let re10 = new RegExp(".*いくつ.*");
+    let re11 = new RegExp(".*顔がいい.*");
+    let re12 = new RegExp(".*好き.*");
+    
+    if(re.test(text)){
+      swal("アイドルからのお返事","今日はありがとう！");
+      return("今日はありがとう！");      
+    }else if(re2.test(text)){
+      swal("アイドルからのお返事","はじめまして、今日はお祝いに来てくれてありがとう");
+      return ("はじめまして、今日はお祝いに来てくれてありがとう");
+    }else if (re3.test(text)){
+      swal("アイドルからのお返事","ブロマイド！よく撮れてるでしょう？")
+      return ("ブロマイド！よく撮れてるでしょう？");
+    }else if (re4.test(text)){
+      swal("アイドルからのお返事","そうなんです初めてグッズデザインしたんです");
+      return ("そうなんです初めてグッズデザインしたんです");
+    }else if (re5.test(text)){
+      swal("アイドルからのお返事","てれるなー！");
+      return ("てれるなー！");
+    }else if (re6.test(text)){
+      swal("アイドルからのお返事","かわいい？ってそれほめてる？");
+      return ("かわいい？ってそれほめてる？");
+    }else if (re7.test(text)){
+      swal("アイドルからのお返事","そんなところからわざわざ来てくれたんだね！");
+      return ("そんなところからわざわざ来てくれたんだね！");
+    }else if (re8.test(text)){
+      swal("アイドルからのお返事","今日は来てくれただけで充分僕にとってのプレゼントだよ");
+      return ("今日は来てくれただけで充分僕にとってのプレゼントだよ");
+    }else if (re9.test(text)){
+      swal("アイドルからのお返事","お手紙はいつもきっちり読んでいるよ");
+      return ("お手紙はいつもきっちり読んでいるよ");
+    }else if (re10.test(text)){
+      swal("アイドルからのお返事","今年で26歳になります、これからもよろしくね");
+      return ("今年で26歳になります、これからもよろしくね");
+    }else if (re11.test(text)){
+      swal("アイドルからのお返事","でしょう？？");
+      return ("でしょう？？");
+    }else if (re12.test(text)){
+      swal("アイドルからのお返事","ありがとううれしい");
+      return ("ありがとううれしい");
+    }else{
+      swal("スタッフからのお達し","お時間でーす退室お願いしまーす");
+      return ("お時間でーす退室お願いしまーす");
+    }
+    
+  }
+
+
+  
+  
+  
+  
+  
+  
+  
+
+  // 発話機能をインスタンス化
+  let msg = new SpeechSynthesisUtterance();
+  let voices = window.speechSynthesis.getVoices();
+
+  function speak(text) {
+    // 以下オプション設定（日本語は効かないもよう。。）
+    msg.voice = voices[7]; // 7:Google 日本人 ja-JP ※他は英語のみ
+    msg.volume = 1.0; // 音量 min 0 ~ max 1
+    msg.rate = 1.0; // 速度 min 0 ~ max 10
+    msg.pitch = 0; // 音程 min 0 ~ max 2
+
+    msg.text = text; // 喋る内容
+    msg.lang = 'ja-JP'; // en-US or ja-JP
+    // msg.lang = 'en-US'; // en-US or ja-JP
+
+    // 発話実行
+    speechSynthesis.speak(msg);
+  }
+  
+  // 終了時の処理
+  msg.onend = function (event) {
+    console.log('喋った時間：' + event.elapsedTime + 'ms');
+  }
+
+
+</script>
+ 
+
+  <script>//カメラ</script>
+    <script src="https://cdn.jsdelivr.net/npm/p5"></script>
+    <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+
+  
+    <!-- 2.以下にsetup関数とdraw関数を定義 -->
+    <script>
+        let video;
+        let poseNet;
+        let poses = [];
+        let skeletons = [];
+
+        let right;
+        let left;
+        let mix;
+
+        function preload() { //setupよりまえに画像を定義するためのコーナー
+            you = loadImage("animalface_usagi.png");
+            idol = loadImage("idol.png");
+        }
+
+
+        function setup() {
+            createCanvas(500,300 );
+            rectMode(CENTER);
+            video = createCapture(VIDEO);
+
+            // Create a new poseNet method with a single detection
+            poseNet = ml5.poseNet(video, modelReady);
+            // This sets up an event that fills the global variable "poses"
+            // with an array every time new poses are detected
+            poseNet.on('pose', function(results) {
+                poses = results;
+            });
+            // Hide the video element, and just show the canvas
+            video.hide();
+        }
+
+        function modelReady() {
+            select('#status').html('Model Loaded');
+        }
+
+        
+        function draw() {
+            image(video, 0, 0, width, height);
+
+            // We can call both functions to draw all keypoints and the skeletons
+            drawKeypoints();
+            drawSkeleton();
+        }
+
+        // A function to draw ellipses over the detected keypoints
+        function drawKeypoints() {
+            // Loop through all the poses detected
+            for (let i = 0; i < poses.length; i++) {
+                // For each pose detected, loop through all the keypoints
+                for (let j = 0; j < poses[i].pose.keypoints.length; j++) { //keypoints
+                    // A keypoint is an object describing a body part (like rightArm or leftShoulder)
+                    let keypoint1 = poses[i].pose.keypoints[0]; //jで番号指定//iは何でもいいよ//keypoints[j]だった
+
+                    if (keypoint1.score > 0.9) { //20パーセント以上だと表示
+                        //image(you, keypoint1.position.x-200, keypoint1.position.y-250, 250, 250);
+                        image(idol, keypoint1.position.x+50, keypoint1.position.y-200, 300, 500);
+                    }
+                    
+                }
+            }
+        }
+
+        // A function to draw the skeletons
+        function drawSkeleton() {
+            // Loop through all the skeletons detected
+            for (let i = 0; i < poses.length; i++) {
+                // For every skeleton, loop through all body connections
+                for (let j = 0; j < poses[i].skeleton.length; j++) {
+                    let partA = poses[i].skeleton[j][0];
+                    let partB = poses[i].skeleton[j][1];
+                    stroke(255, 0, 0);
+                    line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+                }
+            }
+        }
+    </script>  
+  
+  
